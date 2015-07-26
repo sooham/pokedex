@@ -1,0 +1,20 @@
+BASE URL
+    http://pokeapi.co/
+
+ONLY ACCEPTS HTTP GET methods
+
+GET api/v1/pokedex/1/
+    Returns all pokemon and their uris
+
+GET api/v1/pokemon/ID/
+    Returns the pokemon with national pokedex number ID
+
+GET api/v1/description/ID/
+    Returns the description of the pokemon wiht ID
+
+GET api/v1/sprite/ID/
+    Returns the object containing the sprite URI
+
+
+for more information see:
+http://pokeapi.co/docs/

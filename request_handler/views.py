@@ -7,8 +7,7 @@ import twilio.twiml
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
-from django.http import HttpResponseNotFound
-from django.http import HttpResponseRedirect
+#  from django.http import HttpResponseNotFound
 from django.http import HttpResponseServerError
 #  from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -36,7 +35,7 @@ def init_twilio_rest_client():
 def number(string):
     ''' (str) -> str
     Checks if string contains an numbers only using regex and returns
-    the corresponding number. Otherwise returns None
+    the corresponding number. Otherwise returns None.
     '''
     match_obj = re.match("^\s*(\d+)\s*$", string)
     if match_obj:
@@ -47,11 +46,23 @@ def number(string):
 
 def send_sms(msg):
     ''' (str) -> HttpResponse
-    Return the TwiML message verb with msg as a HttpResponse
+    Return the TwiML message verb with msg as a HttpResponse.
     '''
     try:
         response = twilio.twiml.Response()
         response.message(msg)
+        return HttpResponse(response.toxml(), content_type='text/xml')
+    except twilio.TwilioRestException:
+        return HttpResponseServerError(reason='the twilio API is busy now')
+
+
+def redirect_to(url):
+    ''' (str) -> HttpResponse
+    Return the TwiML redirect verb with url redirection as HttpResponse.
+    '''
+    try:
+        response = twilio.twiml.Response()
+        response.redirect(url, method="GET")
         return HttpResponse(response.toxml(), content_type='text/xml')
     except twilio.TwilioRestException:
         return HttpResponseServerError(reason='the twilio API is busy now')
@@ -75,15 +86,13 @@ def sms_input_handler(request):
     msg_body = request.POST['Body']
     usr_requested_pkmn_num = number(str(msg_body))
     if usr_requested_pkmn_num:
-        return HttpResponseRedirect(
+        return redirect_to(
             reverse('pokemon-number', args=(usr_requested_pkmn_num,))
         )
-    if re.match("^\s*([Hh]elp)\s*$"):
-        return HttpResponseRedirect(reverse('help'))
     if re.match("^\s*([Aa]bout)\s*$"):
-        return HttpResponseRedirect(reverse('about'))
-    # return an error message
-    return HttpResponseNotFound()
+        return redirect_to(reverse('about'))
+    # all gibberish leads to a help redirection
+    return redirect_to(reverse('help'))
 
 
 def pokemon_no(request, num):

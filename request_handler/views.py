@@ -67,9 +67,7 @@ def sms_input_handler(request):
         init_twilio_rest_client()
 
     if request.method == 'GET':
-        return HttpResponseForbidden(
-            reason='This website is not designed for browsers'
-        )
+        return HttpResponseForbidden()
 
     # check if user is first time or not and send help msg
 
@@ -80,9 +78,9 @@ def sms_input_handler(request):
         return HttpResponsePermanentRedirect(
             reverse('pokemon-number', args=(usr_requested_pkmn_num,))
         )
-    if re.match("^\s*(help)\s*$"):
+    if re.match("^\s*([Hh]elp)\s*$"):
         return HttpResponsePermanentRedirect(reverse('help'))
-    if re.match("^\s*(about)\s*$"):
+    if re.match("^\s*([Aa]bout)\s*$"):
         return HttpResponsePermanentRedirect(reverse('about'))
     # return an error message
     return HttpResponseNotFound()
@@ -118,10 +116,8 @@ def pokemon_no(request, num):
 
 
 def about(request):
-    global client
-    send_sms('Made by Sooham Rafiz. 2015.\n Thanks to PokeAPI.')
+    return send_sms('Made by Sooham Rafiz. 2015.\n Thanks to PokeAPI.')
 
 
 def show_help(request):
-    global client
-    send_sms('Enter pokemon national dex number to view pokedex entry.')
+    return send_sms('Enter pokemon national dex number to view pokedex entry.')

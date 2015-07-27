@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseNotFound
-from django.http import HttpResponsePermanentRedirect
+from django.http import HttpResponseRedirect
 from django.http import HttpResponseServerError
 #  from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -69,21 +69,19 @@ def sms_input_handler(request):
     if request.method == 'GET':
         return HttpResponseForbidden()
 
-    return send_sms('inside sms_input_handler')
-
     # check if user is first time or not and send help msg
 
     # search the body of message for correct input types
     msg_body = request.POST['Body']
-    usr_requested_pkmn_num = number(msg_body)
+    usr_requested_pkmn_num = number(str(msg_body))
     if usr_requested_pkmn_num:
-        return HttpResponsePermanentRedirect(
+        return HttpResponseRedirect(
             reverse('pokemon-number', args=(usr_requested_pkmn_num,))
         )
     if re.match("^\s*([Hh]elp)\s*$"):
-        return HttpResponsePermanentRedirect(reverse('help'))
+        return HttpResponseRedirect(reverse('help'))
     if re.match("^\s*([Aa]bout)\s*$"):
-        return HttpResponsePermanentRedirect(reverse('about'))
+        return HttpResponseRedirect(reverse('about'))
     # return an error message
     return HttpResponseNotFound()
 

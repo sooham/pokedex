@@ -48,33 +48,18 @@ def send_sms(msg):
     ''' (str) -> HttpResponse
     Return the TwiML message verb with msg as a HttpResponse.
     '''
-    try:
-        response = twilio.twiml.Response()
-        response.message(msg)
-        return HttpResponse(response.toxml(), content_type='text/xml')
-    except twilio.TwilioRestException:
-        return HttpResponseServerError(reason='the twilio API is busy now')
+    response = twilio.twiml.Response()
+    response.message(msg)
+    return HttpResponse(response.toxml(), content_type='text/xml')
 
 
 def redirect_to(url):
     ''' (str) -> HttpResponse
     Return the TwiML redirect verb with url redirection as HttpResponse.
     '''
-    try:
         response = twilio.twiml.Response()
         response.redirect(url, method="GET")
         return HttpResponse(response.toxml(), content_type='text/xml')
-    except twilio.TwilioRestException:
-        return HttpResponseServerError(reason='the twilio API is busy now')
-
-
-def debug(msg):
-    global client
-    client.messages.create(
-        to='+16478366256',
-        from_=os.environ['TWILIO_PHONE_NUMBER'],
-        body=msg
-    )
 
 
 @csrf_exempt
@@ -83,31 +68,24 @@ def sms_input_handler(request):
     pokemon by name or number through Twilio requests to the correct views
     '''
     global client
-    debug('in sms_input_handler')
     if not client:
-        debug('client fail')
         init_twilio_rest_client()
 
     if request.method == 'GET':
-        debug('response was GET')
         return HttpResponseForbidden()
 
     # check if user is first time or not and send help msg
 
     # search the body of message for correct input types
-    msg_body = request.POST['Body']
-    debug(msg_body + str(type(msg_body)))
-    usr_requested_pkmn_num = number(str(msg_body))
+    msg_body = str(request.POST['Body'])
+    usr_requested_pkmn_num = number(msg_body)
     if usr_requested_pkmn_num:
-        debug('in pkmn')
         return redirect_to(
             reverse('pokemon-number', args=(usr_requested_pkmn_num,))
         )
-    if re.match("^\s*([Aa]bout)\s*$"):
-        debug('in about')
+    if re.match("^\s*([Aa]bout)\s*$", msg_body):
         return redirect_to(reverse('about'))
     # all gibberish leads to a help redirection
-    debug('in help')
     return redirect_to(reverse('help'))
 
 
@@ -141,10 +119,8 @@ def pokemon_no(request, num):
 
 
 def about(request):
-    debug('running about')
     return send_sms('Made by Sooham Rafiz. 2015.\n Thanks to PokeAPI.')
 
 
 def show_help(request):
-    debug('running help')
     return send_sms('Enter pokemon national dex number to view pokedex entry.')

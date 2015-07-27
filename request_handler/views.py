@@ -67,20 +67,23 @@ def redirect_to(url):
     except twilio.TwilioRestException:
         return HttpResponseServerError(reason='the twilio API is busy now')
 
+
 def debug(msg):
+    global client
     client.messages.create(
         to='+16478366256',
         from_=os.environ['TWILIO_PHONE_NUMBER'],
         body=msg
     )
 
+
 @csrf_exempt
 def sms_input_handler(request):
     ''' Analyses the HTTP POST request from Twilio servers and redirects to
     pokemon by name or number through Twilio requests to the correct views
     '''
-    debug('in sms_input_handler')
     global client
+    debug('in sms_input_handler')
     if not client:
         debug('client fail')
         init_twilio_rest_client()
@@ -138,8 +141,10 @@ def pokemon_no(request, num):
 
 
 def about(request):
+    debug('running about')
     return send_sms('Made by Sooham Rafiz. 2015.\n Thanks to PokeAPI.')
 
 
 def show_help(request):
+    debug('running help')
     return send_sms('Enter pokemon national dex number to view pokedex entry.')

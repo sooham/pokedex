@@ -3,11 +3,13 @@ import os
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseServerError
+from django.views.decorators.csrf import csrf_exempt
 from twilio.rest import TwilioRestClient
 
 client = None
 
 
+@csrf_exempt
 def init_twilio_rest_client():
     global client
     if not client:

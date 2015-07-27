@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from twilio.rest import TwilioRestClient
 
 PKMNS = requests.get("http://pokeapi.co/api/v1/pokedex/1/").json()["pokemon"]
-PKMN_NAMES = [pokemon['name'] for pokemon in PKMNS]
+PKMN_NAMES = sorted([pokemon['name'] for pokemon in PKMNS])
 
 client = None
 
@@ -96,13 +96,17 @@ def pokemon_no(request, num):
     # check if the number is correct national dex number
     request = requests.get(BASE_URL + num + '/')
     if request.status_code != 200:
-        if 0 <= num < len(PKMNS):
-            # send message for downtime
-            send_sms('The PokeAPI is down, please try again later.')
-        else:
-            send_sms('That pokemon does not exist.')
+        return send_sms('That pokemon does not exist.')
     else:   # pokemon exists, send data
-        send_sms(PKMN_NAMES[num])
+        pokemon = request.json()
+        # send name data over
+        return send_sms(pokemon['name'])
+        # client.messages.create(
+        #     to='+16478366256',
+        #     from_=os.environ['TWILIO_PHONE_NUMBER'],
+        #     body='pokemon ' + num
+        # )
+        # return HttpResponse()
 
     # GET /api/v1/pokemon/ID/
     # Useful keys
@@ -119,12 +123,6 @@ def pokemon_no(request, num):
 
     # GET /api/v1/sprite/ID
     # image
-    client.messages.create(
-        to='+16478366256',
-        from_=os.environ['TWILIO_PHONE_NUMBER'],
-        body='pokemon ' + num
-    )
-    return HttpResponse()
 
 
 def about(request):

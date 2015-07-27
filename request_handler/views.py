@@ -102,20 +102,19 @@ def pokemon_no(request, num):
         # send name data over
         name = pokemon["name"]
         national_id = pokemon['national_id']
-        types = [typ['name'] for typ in pokemon['types']].join(', ')
+        types = ', '.join([typ['name'] for typ in pokemon['types']])
         ability = pokemon['abilities'][0]['name']
         weight = pokemon['weight']
         sprite = BASE_URL + pokemon['sprites'][0]['resource_uri']
 
-        pokemon_info = [name, national_id, types, ability, weight].join('\n')
-
-        client.messages.create(
-            to=request.From,
-            from_=os.environ['TWILIO_PHONE_NUMBER'],
-            body=pokemon_info,
-            media_url=sprite
+        pokemon_info = '\n'.join(
+            [name, str(national_id), types, ability, weight]
         )
-        return HttpResponse()
+
+        response = twilio.twiml.Response()
+        response.message(sprite)
+        response.message(pokemon_info)
+        return HttpResponse(response.toxml(), content_type='text/xml')
 
 
 def about(request):

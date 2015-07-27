@@ -4,7 +4,6 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseServerError
 from twilio.rest import TwilioRestClient
-import twilio.twiml
 
 client = None
 
@@ -24,9 +23,16 @@ def init_twilio_rest_client():
 def index(request):
     global client
     init_twilio_rest_client()
-    resp = twilio.twiml.Response()
-    resp.message("Hello, mobile monkey")
-    return HttpResponse(resp)
+    # search the request body and reply
+    # the body back to the sender
+    caller = request.POST['From']
+    msg_body = request.POST['Body']
+    client.messages.create(
+        to=caller,
+        from_=os.environ['TWILIO_PHONE_NUMBER'],
+        body=msg_body
+    )
+    return HttpResponse()
 
 
 def pokemon_name(request, name):

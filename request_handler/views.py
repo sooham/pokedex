@@ -9,7 +9,6 @@ from twilio.rest import TwilioRestClient
 client = None
 
 
-@csrf_exempt
 def init_twilio_rest_client():
     global client
     if not client:
@@ -22,6 +21,7 @@ def init_twilio_rest_client():
         client = TwilioRestClient(account_sid, auth_token)
 
 
+@csrf_exempt
 def index(request):
     global client
     init_twilio_rest_client()

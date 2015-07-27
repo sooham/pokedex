@@ -92,37 +92,30 @@ def sms_input_handler(request):
 
 def pokemon_no(request, num):
     global client
-    BASE_URL = 'http://pokeapi.co/api/v1/pokemon/'
+    BASE_URL = 'http://pokeapi.co'
     # check if the number is correct national dex number
-    request = requests.get(BASE_URL + num + '/')
-    if request.status_code != 200:
+    req = requests.get(BASE_URL + '/api/v1/pokemon/' + num + '/')
+    if req.status_code != 200:
         return send_sms('That pokemon does not exist.')
     else:   # pokemon exists, send data
-        pokemon = request.json()
+        pokemon = req.json()
         # send name data over
-        return send_sms(pokemon['name'])
-        # client.messages.create(
-        #     to='+16478366256',
-        #     from_=os.environ['TWILIO_PHONE_NUMBER'],
-        #     body='pokemon ' + num
-        # )
-        # return HttpResponse()
+        name = pokemon["name"]
+        national_id = pokemon['national_id']
+        types = [typ['name'] for typ in pokemon['types']].join(', ')
+        ability = pokemon['abilities'][0]['name']
+        weight = pokemon['weight']
+        sprite = BASE_URL + pokemon['sprites'][0]['resource_uri']
 
-    # GET /api/v1/pokemon/ID/
-    # Useful keys
-    # abilities 0 name
-    # national_id
-    # evolutions to and evolutions level
-    # name
-    # wieght
-    # total
-    # types
+        pokemon_info = [name, national_id, types, ability, weight].join('\n')
 
-    # GET /api/v1/description/ID/
-    # description
-
-    # GET /api/v1/sprite/ID
-    # image
+        client.messages.create(
+            to=request.From,
+            from_=os.environ['TWILIO_PHONE_NUMBER'],
+            body=pokemon_info,
+            media_url=sprite
+        )
+        return HttpResponse()
 
 
 def about(request):

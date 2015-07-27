@@ -1,4 +1,4 @@
-#import json
+#  import json
 import os
 import re
 import twilio
@@ -10,7 +10,7 @@ from django.http import HttpResponseForbidden
 from django.http import HttpResponseNotFound
 from django.http import HttpResponsePermanentRedirect
 from django.http import HttpResponseServerError
-#from django.shortcuts import render
+#  from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from twilio.rest import TwilioRestClient
 
@@ -68,9 +68,8 @@ def sms_input_handler(request):
 
     if request.method == 'GET':
         return HttpResponseForbidden()
-    response = twilio.twiml.Response()
-    response.message('sms_input_handler works')
-    return HttpResponse(response.toxml(), content_type='text/xml')
+
+    return send_sms('inside sms_input_handler')
 
     # check if user is first time or not and send help msg
 

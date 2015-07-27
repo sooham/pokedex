@@ -1,17 +1,18 @@
-#  import json
 import os
 import re
+import requests
 import twilio
 import twilio.twiml
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
-#  from django.http import HttpResponseNotFound
 from django.http import HttpResponseServerError
-#  from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from twilio.rest import TwilioRestClient
+
+PKMNS = requests.get("http://pokeapi.co/api/v1/pokedex/1/").json()["pokemon"]
+PKMN_NAMES = [pokemon['name'] for pokemon in PKMNS]
 
 client = None
 
@@ -91,9 +92,17 @@ def sms_input_handler(request):
 
 def pokemon_no(request, num):
     global client
-    # BASE_URL = http://pokeapi.co
-
-    # If it is a correct national dex number
+    BASE_URL = 'http://pokeapi.co/api/v1/pokemon/'
+    # check if the number is correct national dex number
+    request = requests.get(BASE_URL + num + '/')
+    if request.status_code != 200:
+        if 0 <= num < len(PKMNS):
+            # send message for downtime
+            send_sms('The PokeAPI is down, please try again later.')
+        else:
+            send_sms('That pokemon does not exist.')
+    else:   # pokemon exists, send data
+        send_sms(PKMN_NAMES[num])
 
     # GET /api/v1/pokemon/ID/
     # Useful keys

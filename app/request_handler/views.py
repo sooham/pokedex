@@ -1,19 +1,64 @@
+import os
+
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError
+from twilio.rest import TwilioRestClient
+
+client = None
+
+
+def init_twilio_rest_client():
+    global client
+    if not client:
+        try:
+            account_sid = os.environ['TWILIO_ACCOUNT_SID']
+            auth_token = os.environ['TWILIO_AUTH_TOKEN']
+        except KeyError:
+            # not really HttpResponse but
+            raise HttpResponseServerError()
+        client = TwilioRestClient(account_sid, auth_token)
 
 
 def index(request):
-    return HttpResponse("This page should send a general pokedex message")
+    global client
+    init_twilio_rest_client()
+    client.messages.create(
+        to='+16478366256',
+        from_=os.environ['TWILIO_PHONE_NUMBER'],
+        body='general pokedex'
+    )
+    return HttpResponse()
 
 
 def pokemon_name(request, name):
-    return HttpResponse("Pokedex entry for pokemon %s." % name)
+    global client
+    init_twilio_rest_client()
+    client.messages.create(
+        to='+16478366256',
+        from_=os.environ['TWILIO_PHONE_NUMBER'],
+        body='pokemon ' + name
+    )
+    return HttpResponse()
 
 
 def pokemon_no(request, num):
-    return HttpResponse("Pokedex entry for pokemon with dex num %s." % num)
+    global client
+    init_twilio_rest_client()
+    client.messages.create(
+        to='+16478366256',
+        from_=os.environ['TWILIO_PHONE_NUMBER'],
+        body='pokemon ' + num
+    )
+    return HttpResponse()
 
 
 def about(request):
-    return HttpResponse("This page should tell the user about the project")
+    global client
+    init_twilio_rest_client()
+    client.messages.create(
+        to='+16478366256',
+        from_=os.environ['TWILIO_PHONE_NUMBER'],
+        body='about page'
+    )
+    return HttpResponse()

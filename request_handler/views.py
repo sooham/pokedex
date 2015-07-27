@@ -113,7 +113,7 @@ def pokemon_no(request, num):
             [name, str(national_id), types, ability, weight]
         )
 
-        response = "<Response><Message><Media>" + sprite + "</Media><Body>" + pokemon_info + "</Body></Message></Response>"
+        response = "<Response><Message><Media>" + sprite + "</Media></Message><Message><Body>" + pokemon_info + "</Body></Message></Response>"
         return HttpResponse(response, content_type='text/xml')
         # response = twilio.twiml.Response()
         # response.message(sprite)

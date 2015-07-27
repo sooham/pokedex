@@ -67,31 +67,44 @@ def redirect_to(url):
     except twilio.TwilioRestException:
         return HttpResponseServerError(reason='the twilio API is busy now')
 
+def debug(msg):
+    client.messages.create(
+        to='+16478366256',
+        from_=os.environ['TWILIO_PHONE_NUMBER'],
+        body=msg
+    )
 
 @csrf_exempt
 def sms_input_handler(request):
     ''' Analyses the HTTP POST request from Twilio servers and redirects to
     pokemon by name or number through Twilio requests to the correct views
     '''
+    debug('in sms_input_handler')
     global client
     if not client:
+        debug('client fail')
         init_twilio_rest_client()
 
     if request.method == 'GET':
+        debug('response was GET')
         return HttpResponseForbidden()
 
     # check if user is first time or not and send help msg
 
     # search the body of message for correct input types
     msg_body = request.POST['Body']
+    debug(msg_body + str(type(msg_body)))
     usr_requested_pkmn_num = number(str(msg_body))
     if usr_requested_pkmn_num:
+        debug('in pkmn')
         return redirect_to(
             reverse('pokemon-number', args=(usr_requested_pkmn_num,))
         )
     if re.match("^\s*([Aa]bout)\s*$"):
+        debug('in about')
         return redirect_to(reverse('about'))
     # all gibberish leads to a help redirection
+    debug('in help')
     return redirect_to(reverse('help'))
 
 

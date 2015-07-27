@@ -105,7 +105,9 @@ def pokemon_no(request, num):
         types = ', '.join([typ['name'] for typ in pokemon['types']])
         ability = pokemon['abilities'][0]['name']
         weight = pokemon['weight']
-        sprite = BASE_URL + pokemon['sprites'][0]['resource_uri']
+        sprite = requests.get(
+            BASE_URL + pokemon['sprites'][0]['resource_uri']
+        ).json()['image']
 
         pokemon_info = '\n'.join(
             [name, str(national_id), types, ability, weight]

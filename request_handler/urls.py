@@ -2,8 +2,8 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    # url(r'^name/(?P<name>[A-Za-z]+)/$', views.pokemon_name, name='pkmn_name'),
-    # url(r'^num/(?P<num>\d+)/$', views.pokemon_no, name='pkmn_num'),
-    # url(r'^about/$', views.about, name='about'),
+    url(r'^$', views.sms_input_handler),
+    url(r'^num/(?P<num>\d+)/$', views.pokemon_no, name='pokemon-number'),
+    url(r'^about/$', views.about, name='about'),
+    url(r'^help/$', views.show_help, name='help'),
 ]

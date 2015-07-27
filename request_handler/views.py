@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseServerError
 from django.views.decorators.csrf import csrf_exempt
 from twilio.rest import TwilioRestClient
+import twilio.twiml
 
 client = None
 
@@ -29,12 +30,9 @@ def index(request):
     # the body back to the sender
     caller = request.POST['From']
     msg_body = request.POST['Body']
-    client.messages.create(
-        to=caller,
-        from_=os.environ['TWILIO_PHONE_NUMBER'],
-        body=msg_body
-    )
-    return HttpResponse()
+    resp = twilio.twiml.Response()
+    resp.message(msg_body)
+    return HttpResponse(resp.toxml(), content_type='text/xml')
 
 
 def pokemon_name(request, name):

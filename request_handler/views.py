@@ -57,9 +57,9 @@ def redirect_to(url):
     ''' (str) -> HttpResponse
     Return the TwiML redirect verb with url redirection as HttpResponse.
     '''
-        response = twilio.twiml.Response()
-        response.redirect(url, method="GET")
-        return HttpResponse(response.toxml(), content_type='text/xml')
+    response = twilio.twiml.Response()
+    response.redirect(url, method="GET")
+    return HttpResponse(response.toxml(), content_type='text/xml')
 
 
 @csrf_exempt

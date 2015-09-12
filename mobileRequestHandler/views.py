@@ -14,7 +14,7 @@ def pokedexVoiceView():
         Returns a TwiML response rejecting incoming call.
     """
     response = twiml.Response()
-    response.reject(reason="We do not accept calls.")
+    response.reject()
     return response
 
 

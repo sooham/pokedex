@@ -2,6 +2,7 @@ import json
 
 import requests
 
+from django.http import HttpResponse
 from django_twilio.decorators import twilio_view
 from twilio import twiml
 
@@ -14,15 +15,18 @@ def respondToTwilioRequest(request):
     """
     if request.method == "GET":
         return HttpResponse("We do not accept GET requests here.")
+
     message_body = request.POST["Body"]
     pokemon_name = message_body.strip().lower()
     # check if pokemon is in pokedex
     pokedex_entry = check_pokedex(pokemon_name)
     response = twiml.Response()
     if pokedex_entry:
-        response.message("This pokemon exists.")
+        response.message(pokedex_entry['description'])
     else:
-        response.message("This pokemon does not exist.")
+        response.message(
+            "Pokemon not found. Please type the name of pokemon to search."
+        )
     return response
 
 
@@ -38,7 +42,6 @@ def check_pokedex(pokemon):
         description_uri = json_data['descriptions'][0]['resource_uri']
         sprite = query_pokeapi(sprite_uri)
         description = query_pokeapi(description_uri)
-        pokedex_entry['name'] = json_data['name']
         pokedex_entry['description'] = description['description']
         pokedex_entry['sprite'] = "http://pokeapi.co" + sprite['image']
     return pokedex_entry

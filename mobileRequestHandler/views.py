@@ -12,7 +12,9 @@ def respondToTwilioRequest(request):
         Takes in POST request from Twilio servers and
         returns either help response or pokedex entry.
     """
-    message_body = request.POST["body"]
+    if request.method == "GET":
+        return HttpResponse("We do not accept GET requests here.")
+    message_body = request.POST["Body"]
     pokemon_name = message_body.strip().lower()
     # check if pokemon is in pokedex
     pokedex_entry = check_pokedex(pokemon_name)

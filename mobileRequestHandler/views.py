@@ -2,19 +2,35 @@ import json
 
 import requests
 
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django_twilio.decorators import twilio_view
+from django.request import decompose
 from twilio import twiml
+
+
+@twilio_view
+def pokedexVoiceView():
+    """ (Nonetype) -> twiml.Response
+        Returns a TwiML response rejecting incoming call.
+    """
+    response = twiml.Response()
+    response.reject(reason="Pokedex does not accept calls.")
+    return response
 
 
 @twilio_view
 def respondToTwilioRequest(request):
     """ (HttpRequest) -> HttpResponse
         Takes in POST request from Twilio servers and
-        returns either help response or pokedex entry.
+        returns the correct action.
     """
     if request.method == "GET":
-        return HttpResponse("We do not accept GET requests here.")
+        return HttpResponseRedirect('/')
+
+    # deal with Voice requests
+    twilio_request = decompose(request)
+    if twilio_request.type is 'voice':
+        pokedexVoiceView()
 
     message_body = request.POST["Body"]
     pokemon_name = message_body.strip().lower()
@@ -23,7 +39,7 @@ def respondToTwilioRequest(request):
     response = twiml.Response()
     if pokedex_entry:
         response.message(
-            pokedex_entry['description']
+            "{0} {1}".format(pokemon_name, pokedex_entry['description'])
         ).media(pokedex_entry['sprite'])
     else:
         response.message(

@@ -22,8 +22,9 @@ def respondToTwilioRequest(request):
     pokedex_entry = check_pokedex(pokemon_name)
     response = twiml.Response()
     if pokedex_entry:
-        response.message(pokedex_entry['description'])
-        response.media(pokedex_entry['sprite'])
+        response.message(
+            pokedex_entry['description']
+        ).media(pokedex_entry['sprite'])
     else:
         response.message(
             "Pokemon not found. Please type the name of pokemon to search."

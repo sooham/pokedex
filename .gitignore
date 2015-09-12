@@ -1,5 +1,6 @@
-example_call.py
 db.sqlite3
 __pycache__
 *.pyc
 *.swp
+staticfiles
+venv

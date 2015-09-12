@@ -4,7 +4,7 @@ import requests
 
 from django.http import HttpResponseRedirect
 from django_twilio.decorators import twilio_view
-from django.request import decompose
+from django_twilio.request import decompose
 from twilio import twiml
 
 

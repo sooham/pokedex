@@ -1,29 +1,27 @@
-# from django_twilio.decorators import twilio_view
-# from django_twilio.client import twilio_client
 import json
+
 import requests
-from django.http import HttpResponse
-from os import environ
-from twilio.rest import TwilioRestClient
+
+from django_twilio.decorators import twilio_view
+from twilio import twiml
 
 
+@twilio_view
 def respondToTwilioRequest(request):
-    """ (HttpRequest POST) -> HttpResponse
+    """ (HttpRequest) -> HttpResponse
         Takes in POST request from Twilio servers and
         returns either help response or pokedex entry.
     """
-    # Get the body of the twilio message
     message_body = request.POST["body"]
-    # lowercase the first name
     pokemon_name = message_body.strip().lower()
+    # check if pokemon is in pokedex
     pokedex_entry = check_pokedex(pokemon_name)
-    client = TwilioRestClient()
-    body = "pokemon found" if pokedex_entry else "help msg"
-    client.messages.create(
-        body=body,
-        to="+16478366256",
-        from_=environ["TWILIO_DEAFULT_CALLEDID"]
-    )
+    response = twiml.Response()
+    if pokedex_entry:
+        response.message("This pokemon exists.")
+    else:
+        response.message("This pokemon does not exist.")
+    return response
 
 
 def check_pokedex(pokemon):

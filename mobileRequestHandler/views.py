@@ -60,26 +60,3 @@ def query_pokeapi(resource_url):
     if response.status_code == 200:
         return json.loads(response.text)
     return None
-
-'''
-<?xml version="1.0" encoding="UTF-8" ?>
-<Response>
-    <Say voice="man" language="en-gb">We do not accept voice calls</Say>
-    <Pause/>
-    <Hangup/>
-</Response>
-
-or
-<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Reject/>
-</Response>
-
-<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Message from="my phone number">
-    <Media>image_url</Media>
-    <Body>Pokemon Description</Body>
-    </Message>
-</Response>
-'''

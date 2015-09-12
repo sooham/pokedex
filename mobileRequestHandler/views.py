@@ -8,7 +8,6 @@ from django_twilio.request import decompose
 from twilio import twiml
 
 
-@twilio_view
 def pokedexVoiceView():
     """ (Nonetype) -> twiml.Response
         Returns a TwiML response rejecting incoming call.

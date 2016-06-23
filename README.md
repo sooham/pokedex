@@ -1,4 +1,5 @@
 A pokedex messaging service. Simply text pokemon name to
-`+13304002683` to receive pokedex entry, no apps or internet
-required.
+`+1 (330) 400-2683` **over SMS** to receive pokedex entry, ensure data (3G, 4G) is on.
+
+![Example Image, query Groudon from the Pokedex](./images/test.png "Example")
 
